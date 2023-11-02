@@ -12,6 +12,13 @@ jobs:
       branch: v${{ steps.version.outputs.major }}
       tag: v${{ steps.pack.outputs.version }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+          persist-credentials: false
+          # otherwise, there would be errors pushing refs to the destination repository.
+          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
