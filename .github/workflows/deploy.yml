@@ -45,6 +45,7 @@ jobs:
         run: |
           echo "name=$(jq -r .name package.json)" >> "$GITHUB_ENV"
           echo "version=$(jq -r .version package.json)" >> "$GITHUB_ENV"
+          echo "time=$(date +'%Y%m%d%H%M%S')" >> "$GITHUB_ENV"
 
       - name: Zip dist/index.js
         run: zip -r dist/index.zip dist/index.js
@@ -56,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.version }}
-          release_name: ${{ env.name }} v${{ env.version }}
+          release_name: ${{ env.name }} v${{ env.version }} - ${{env.time}}
           body: New release
           draft: false
           prerelease: false
