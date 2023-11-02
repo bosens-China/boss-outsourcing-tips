@@ -49,9 +49,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0 # 根据你的版本号修改
-          release_name: Release v1.0.0 # 根据你的版本号修改
-          body: New release
+          tag_name: v1.0.0
+          release_name: Release v1.0.0
+          body: |
+            new zip
           draft: false
           prerelease: false
 
