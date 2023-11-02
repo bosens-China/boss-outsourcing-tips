@@ -56,8 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.version }}
-          release_name: ${{ env.name }} v${{ env.version }} - ${{env.time}}
+          tag_name: ${{ env.version }} - ${{env.time}}
+          release_name: ${{ env.name }} v${{ env.version }}
           body: New release
           draft: false
           prerelease: false
