@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         boss外包公司提示
-// @namespace    https://github.com/bosens-China/judgment-outsourcing
+// @namespace    https://github.com/bosens-China/boss-outsourcing-tips
 // @version      1.0.0
 // @description  boss招聘对外包公司显式提醒
 // @author       yliu
