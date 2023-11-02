@@ -15,6 +15,8 @@ export default {
     commonjs(),
     addNotes(),
     esbuild({
+      minify: false,
+      target: "es2015",
       loaders: {
         ".json": "json",
       },

@@ -40,6 +40,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get package.json info
+        id: get_package_info
+        run: |
+          echo "::set-output name=name::$(jq -r .name package.json)"
+          echo "::set-output name=version::$(jq -r .version package.json)"
+
       - name: Zip dist/index.js
         run: zip -r dist/index.zip dist/index.js
 
@@ -49,10 +55,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0
-          release_name: Release v1.0.0
-          body: |
-            new zip
+          tag_name: ${{ steps.get_package_info.outputs.version }}
+          release_name: ${{ steps.get_package_info.outputs.name }} v${{ steps.get_package_info.outputs.version }}
+          body: New release
           draft: false
           prerelease: false
 

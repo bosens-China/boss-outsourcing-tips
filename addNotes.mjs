@@ -1,7 +1,13 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-const { name, version, author, description } = require("./package.json");
+const {
+  name,
+  version,
+  author,
+  description,
+  license,
+} = require("./package.json");
 
 export default function addNotes() {
   return {
@@ -17,6 +23,7 @@ export default function addNotes() {
 // @match        https://www.zhipin.com/job_detail/*
 // @match        http://www.zhipin.com/job_detail/*
 // @grant        none
+// @license      ${license}
 // ==/UserScript==
 `.trim();
 
