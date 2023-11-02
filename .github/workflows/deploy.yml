@@ -39,11 +39,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 保存一些信息
+      - name: Set info
+        run: |
+          eaho "version=node -p \"require('./package.json').version\"" >> $GITHUB_ENV
+          eaho "name=node -p \"require('./package.json').name\"" >> $GITHUB_ENV
+
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: dist/index.js
+          files: ./dist/index.js
+        env:
+          name: ${{env.name}}:${{env.version}}
 
       # - name: Deploy to GitHub Pages
       #   uses: crazy-max/ghaction-github-pages@v4
