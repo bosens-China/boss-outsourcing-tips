@@ -1,4 +1,4 @@
-name: 🚀 Build and release
+name: Create Release with Zip
 
 on:
   push:
@@ -6,109 +6,35 @@ on:
       - master
 
 jobs:
-  build_and_push:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      branch: v${{ steps.version.outputs.major }}
-      tag: v${{ steps.pack.outputs.version }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          persist-credentials: false
-          # otherwise, there would be errors pushing refs to the destination repository.
-          fetch-depth: 0
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          # 选择要使用的 pnpm 版本
-          version: 7
-          # 使用 pnpm 安装依赖
-          run_install: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          # 选择要使用的 node 版本
-          node-version: 16.14.2
-          # 缓存 pnpm 依赖
-          cache: pnpm
+      - name: Zip dist/index.js
+        run: zip -r dist/index.zip dist/index.js
 
-      # 运行构建脚本
-      - name: Build tasks
-        run: npm run build
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 📦 Zip dist files
-        id: pack
-        uses: ./
         with:
-          files: dist, action.yml
+          tag_name: v1.0.0 # 根据你的版本号修改
+          release_name: Release v1.0.0 # 根据你的版本号修改
+          body: New release
+          draft: false
+          prerelease: false
 
-      - name: ⚙️ Unzip dist files
-        run: |
-          mkdir TODEPLOY
-          unzip ${{ steps.pack.outputs.archive }} -d TODEPLOY
-
-      - name: ⚙️ Parse version string
-        id: version
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: ${{ steps.pack.outputs.version }}
-
-      - name: 📢 Publish dist files to dist branch
-        uses: s0/git-publish-subdir-action@v2.4.0
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: self
-          BRANCH: v${{ steps.version.outputs.major }}
-          FOLDER: TODEPLOY
-          SKIP_EMPTY_COMMITS: true
-
-  tag_version:
-    needs: build_and_push
-    runs-on: ubuntu-latest
-    outputs:
-      tagged: ${{ steps.check_tagged.outputs.tagged }}
-      tag: ${{ steps.tag.outputs.new_tag }}
-    steps:
-      - name: 🔃 Checkout dist branch
-        uses: actions/checkout@v2
         with:
-          ref: ${{ needs.build_and_push.outputs.branch }}
-          fetch-depth: 0
-
-      - name: ⚙️ Check tag exists
-        id: check_tag
-        uses: mukunku/tag-exists-action@v1.0.0
-        with:
-          tag: ${{ needs.build_and_push.outputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔖 Tag version
-        id: tag
-        if: ${{ steps.check_tag.outputs.exists == 'false' }}
-        uses: anothrNick/github-tag-action@1.34.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ needs.build_and_push.outputs.tag }}
-
-      - name: ⚙️ Check created tag
-        id: check_tagged
-        run: |
-          echo "::set-output name=tagged::${{ (steps.check_tag.outputs.exists == 'false') && (steps.tag.outputs.new_tag == steps.tag.outputs.tag) }}"
-
-  create_release:
-    needs: tag_version
-    if: ${{ needs.tag_version.outputs.tagged == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🛎️ Create release
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.tag_version.outputs.tag }}
-          draft: true
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/index.zip
+          asset_name: index.zip
+          asset_content_type: application/zip
