@@ -1,0 +1,28 @@
+{
+  "name": "boss-outsourcing-tips",
+  "version": "1.0.0",
+  "description": "boss招聘对外包公司显式提醒",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "keywords": [],
+  "author": "yliu",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@types/node": "^20.8.10",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "esbuild": "^0.19.5",
+    "eslint": "^8.52.0",
+    "preact": "^10.18.1",
+    "rollup": "^4.2.0",
+    "rollup-plugin-esbuild": "^6.1.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "preact-render-to-string": "^6.2.2"
+  }
+}
