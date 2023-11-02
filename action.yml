@@ -1,0 +1,23 @@
+name: Zip npm files
+description: Zip specific files of npm project for deployment and distribution
+branding:
+  icon: archive
+  color: green
+inputs:
+  files:
+    description: Files to zip
+    required: true
+  cwd:
+    description: Current working directory
+    required: false
+    default: ""
+outputs:
+  archive:
+    description: Relative path to zip archive
+  name:
+    description: Name of npm package
+  version:
+    description: Version of npm package
+runs:
+  using: node12
+  main: dist/index.js

@@ -45,7 +45,7 @@ jobs:
         id: pack
         uses: ./
         with:
-          files: dist
+          files: dist, action.yml
 
       - name: ⚙️ Unzip dist files
         run: |
