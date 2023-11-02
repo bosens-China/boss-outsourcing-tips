@@ -18,3 +18,6 @@ outputs:
     description: Name of npm package
   version:
     description: Version of npm package
+runs:
+  using: node12
+  main: src/index.js
