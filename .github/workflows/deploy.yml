@@ -51,6 +51,7 @@ jobs:
           files: ./dist/index.js
         env:
           name: ${{env.name}}:${{env.version}}
+          tag_name: ${{env.version}}
 
       # - name: Deploy to GitHub Pages
       #   uses: crazy-max/ghaction-github-pages@v4
