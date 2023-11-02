@@ -11,14 +11,17 @@
 
 ## 使用方式
 
+- 方法一：[点击安装](https://greasyfork.org/zh-CN/scripts/478865-boss%E5%A4%96%E5%8C%85%E5%85%AC%E5%8F%B8%E6%8F%90%E7%A4%BA)
+
+- 方法二：拷贝右边 Releases 自行添加到油猴中
+
+- 方法三：
+
 ```sh
-# 方法一，直接拷贝dist/index.js 文件
-# 方法二
 git clone 当前项目
 pnpm install
 pnpm run build
 # 重复方法一
-# 方法三，点开网站点击安装 https://greasyfork.org/zh-CN/scripts/478865-boss%E5%A4%96%E5%8C%85%E5%85%AC%E5%8F%B8%E6%8F%90%E7%A4%BA
 ```
 
 ## 协议
