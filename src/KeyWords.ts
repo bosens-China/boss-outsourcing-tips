@@ -1,29 +1,72 @@
 import { _ReturnType } from "./chain";
 import information from "./information.json";
 
+const traverse = (dom: Element, fn: (el: ChildNode) => void): void => {
+  const arr = Array.from(dom.childNodes);
+  arr.forEach((item) => {
+    if (item.nodeType === Node.ELEMENT_NODE) {
+      traverse(item as Element, fn);
+      return;
+    }
+    fn(item);
+  });
+};
+
 export const keyWords = (): _ReturnType => {
   const selectors = [
-    ".job-banner",
-    ".job-detail-section",
-    ".job-detail-company",
+    ".info-primary h1",
+    ".job-detail-section .job-sec-text",
+    ".job-detail-company .job-sec-text",
   ];
-  const content = selectors.reduce((text, selector) => {
-    const dom = document.body.querySelector(selector);
-    return text + (dom?.textContent ?? "");
-  }, "");
-  // 如果出现一个则提示存在高危风险，两个则直接提示为外包公司谨慎选择
-  let text = "该岗位描述符合外包定义，具体如下：\n";
-  const frequency = information.KeyWords.reduce((count, KeyWord) => {
-    if (content.includes(KeyWord)) {
-      text += `${count + 1}. ${KeyWord}\n`;
-      return count + 1;
+  const store: Set<string> = new Set();
+
+  const effect = (el: ChildNode) => {
+    if (el.nodeType !== Node.TEXT_NODE) {
+      return;
     }
-    return count;
-  }, 0);
+    let content = el.textContent || "";
+
+    // 可能存在多个关键词都在一串文本出现
+    information.KeyWords.forEach((KeyWord) => {
+      if (content.includes(KeyWord)) {
+        store.add(KeyWord);
+        content = content.replace(
+          new RegExp(KeyWord, "g"),
+          `<span style="color:red">${KeyWord}</span>`
+        );
+      }
+    });
+    if (content === el.textContent) {
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    const span = document.createElement("span");
+    span.innerHTML = content;
+    while (span.firstChild) {
+      fragment.appendChild(span.firstChild);
+    }
+    el.parentNode?.replaceChild(fragment, el);
+  };
+
+  selectors.forEach((text) => {
+    const dom = document.body.querySelector(text);
+    if (!dom) {
+      return;
+    }
+    traverse(dom, effect);
+  });
+
   // 如果没有匹配到，转移到下一个链条进行匹配
-  if (!frequency) {
+  if (!store.size) {
     return true;
   }
 
-  return { grade: frequency === 1 ? 0 : 1, text: text.trim() };
+  return {
+    grade: store.size === 1 ? 0 : 1,
+    text: `该岗位描述符合外包定义，出现了：\n${[...store]
+      .map((item, index) => {
+        return `${index + 1}. ${item}`;
+      })
+      .join("\n")}`,
+  };
 };

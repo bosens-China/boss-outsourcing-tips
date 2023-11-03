@@ -1,6 +1,6 @@
 {
   "name": "boss-outsourcing-tips",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "boss招聘对外包公司显式提醒",
   "main": "dist/index.js",
   "scripts": {

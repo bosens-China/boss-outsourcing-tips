@@ -1,19 +1,11 @@
 import { result } from "./chain";
-import { getHtml } from "./notify";
-import { addReminder } from "./utils";
+import { insertNotify } from "./pages/notify";
+import { addReminder } from "./pages/reminder";
 
 (() => {
   if (typeof result === "boolean") {
     return;
   }
-  const html = getHtml(result);
-  const dom = document.body.querySelector(".btn-container");
-  if (!dom) {
-    return;
-  }
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  dom.appendChild(div.firstElementChild!);
-
+  insertNotify(result);
   addReminder(result.text);
 })();

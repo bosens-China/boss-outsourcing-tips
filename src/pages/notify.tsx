@@ -26,6 +26,14 @@ const Notify: FunctionComponent<Props> = (props) => {
   );
 };
 
-export const getHtml = (props: Props) => {
-  return render(<Notify {...props}></Notify>);
+export const insertNotify = (props: Props) => {
+  const html = render(<Notify {...props}></Notify>);
+
+  const dom = document.body.querySelector(".btn-container");
+  if (!dom) {
+    return;
+  }
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  dom.appendChild(div.firstElementChild!);
 };

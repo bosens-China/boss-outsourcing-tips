@@ -5,8 +5,6 @@
 ![tips1](./tips1.png)
 ![tips2](./tips2.png)
 
-> 如果你对它的判定规则好奇，你可以 [点击查看具体规则](./JudgmentConditions.md)。
-> 如果你有好的个规则补充，可以修改 [information.json](./src/information.json) 文件进行 PR，后续审核通过就会发版。
 > 使用需要结合油猴插件使用
 
 ## 使用方式
@@ -23,6 +21,18 @@ pnpm install
 pnpm run build
 # 重复方法一
 ```
+
+## 判定规则
+
+采用黑名单 + 关键词的机制，如果公司名称出现在黑名单上则直接判定为黑名单，否则关键词出现一次，进行提示，出现两次则认定。
+
+参考规则：
+
+- https://www.zhihu.com/question/32123407
+- https://zhuanlan.zhihu.com/p/407777028
+- https://www.zvsts.com/article/news/1/4e347ffffe83fd932bcbbf4efafb0000.html
+
+> 如果你有好的个规则补充，可以修改 [information.json](./src/information.json) 文件进行 PR，后续审核通过就会发版。
 
 ## 协议
 

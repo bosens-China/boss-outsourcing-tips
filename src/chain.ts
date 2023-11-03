@@ -1,6 +1,6 @@
 import { keyWords } from "./KeyWords";
 import { blacklist } from "./blacklist";
-import { Props } from "./notify";
+import { Props } from "./pages/notify";
 
 export type _ReturnType = (Props & { text: string }) | boolean;
 
@@ -11,7 +11,8 @@ class Chain {
 
   next(): _ReturnType {
     const result = this.fn();
-    if (result && this.chain) {
+
+    if (result === true && this.chain) {
       return this.chain.next.apply(this.chain);
     }
     return result;
@@ -26,4 +27,5 @@ class Chain {
 const chainKeyWords = new Chain(keyWords);
 const chainBlacklist = new Chain(blacklist);
 
-export const result = chainBlacklist.setNext(chainKeyWords).next();
+chainBlacklist.setNext(chainKeyWords);
+export const result = chainBlacklist.next();
