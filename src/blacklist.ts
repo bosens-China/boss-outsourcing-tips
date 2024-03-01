@@ -1,5 +1,5 @@
 import { _ReturnType } from "./chain";
-import information from "./information.json";
+import * as information from "./information";
 
 export const blacklist = (): _ReturnType => {
   const dom = document.body.querySelector(

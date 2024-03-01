@@ -32,7 +32,7 @@ pnpm run build
 - https://zhuanlan.zhihu.com/p/407777028
 - https://www.zvsts.com/article/news/1/4e347ffffe83fd932bcbbf4efafb0000.html
 
-> 如果你有好的个规则补充，可以修改 [information.json](./src/information.json) 文件进行 PR，后续审核通过就会发版。
+> 如果你有好的个规则补充，可以修改 [information.ts](./src/information.ts) 文件进行 PR，后续审核通过就会发版。
 
 ## 协议
 

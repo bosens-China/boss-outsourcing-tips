@@ -1,5 +1,5 @@
 import { _ReturnType } from "./chain";
-import information from "./information.json";
+import { KeyWords } from "./information";
 
 const traverse = (dom: Element, fn: (el: ChildNode) => void): void => {
   const arr = Array.from(dom.childNodes);
@@ -27,14 +27,15 @@ export const keyWords = (): _ReturnType => {
     let content = el.textContent || "";
 
     // 可能存在多个关键词都在一串文本出现
-    information.KeyWords.forEach((KeyWord) => {
-      if (content.includes(KeyWord)) {
-        store.add(KeyWord);
-        content = content.replace(
-          new RegExp(KeyWord, "g"),
-          `<span style="color:red">${KeyWord}</span>`
-        );
+    KeyWords.forEach((k) => {
+      const reg = new RegExp(k, "ig");
+      if (!reg.test(content)) {
+        return;
       }
+
+      const str = reg.source;
+      store.add(str);
+      content = content.replace(reg, `<span style="color:red">${k}</span>`);
     });
     if (content === el.textContent) {
       return;
