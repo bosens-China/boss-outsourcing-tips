@@ -1,5 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`文本高亮 1`] = `Highlight {}`;
-
-exports[`正则高亮 1`] = `Highlight {}`;
