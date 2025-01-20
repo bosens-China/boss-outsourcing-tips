@@ -7,12 +7,9 @@
             v-model:value="keyword"
             placeholder="请输入搜索的关键词"
           ></n-input>
-          <n-button>
-            <template #icon>
-              <div class="i-bytesize-feed"></div>
-            </template>
-            从服务器更新黑名单列表
-          </n-button>
+          <UpdateData :update-function="updateFunction"
+            >从服务器更新黑名单列表</UpdateData
+          >
         </n-space>
       </div>
       <n-button type="primary" @click="onAdd">
@@ -47,35 +44,15 @@
 <script setup lang="tsx">
 import type { DataTableColumns, FormInst } from 'naive-ui';
 import { NButton, NSpace, NInput, NPopconfirm, NFormItem } from 'naive-ui';
-import { serialize, deserialize } from 'seroval';
-import Keywords from '../constant/Keywords.json';
 import { v6 as uuid } from 'uuid';
-
-interface Data {
-  value: string;
-  id: string;
-}
+import * as _ from 'lodash-es';
+import { blacklist, type Blacklist, updateBlacklist } from '../store';
+import UpdateData from './update-data.vue';
+import { updateData } from '../api/data';
 
 const formRef = ref<FormInst | null>(null);
 
-const key = '_blacklist';
-if (!window.localStorage.getItem(key)) {
-  window.localStorage.setItem(
-    key,
-    serialize(
-      Keywords.map(
-        (item): Data => ({
-          value: item,
-          id: uuid(),
-        }),
-      ),
-    ),
-  );
-}
-
-const data = ref(
-  (deserialize(window.localStorage.getItem(key) || '') || []) as Data[],
-);
+const data = ref(_.cloneDeep(blacklist.value));
 
 const keyword = ref('');
 const presentationData = computed(() => {
@@ -87,11 +64,23 @@ const presentationData = computed(() => {
   });
 });
 
+const updateFunction = async () => {
+  const result = await updateData<string[]>('blacklist.json');
+  const newData = result.map((item): Blacklist => {
+    return {
+      id: uuid(),
+      value: item,
+    };
+  });
+  updateBlacklist(newData);
+  data.value = _.cloneDeep(blacklist.value);
+};
+
 const editLists = reactive<Record<string, boolean>>({});
 // 记忆值，取消之后需要恢复
-const cacheValue = new Map<string, Data>();
+const cacheValue = new Map<string, Blacklist>();
 
-const columns: DataTableColumns<Data> = [
+const columns: DataTableColumns<Blacklist> = [
   {
     title: '内容',
     key: 'value',
@@ -117,6 +106,15 @@ const columns: DataTableColumns<Data> = [
                 type: 'string',
                 transform(value) {
                   return value.trim();
+                },
+              },
+              {
+                trigger: ['input', 'blur'],
+                asyncValidator: async (_, value) => {
+                  const arr = data.value.filter((f) => f.id !== row.id);
+                  if (arr.some((f) => f.value === value)) {
+                    return Promise.reject(`黑名单「${value}」已存在！`);
+                  }
                 },
               },
             ]}
@@ -225,8 +223,8 @@ const saveAll = async () => {
       }
       return item;
     })
-    .filter((f) => f?.value);
-  window.localStorage.setItem(key, serialize(localData));
+    .filter((f): f is Blacklist => !!f?.value);
+  blacklist.value = localData;
 };
 
 const { name } = defineProps<{ name: string }>();

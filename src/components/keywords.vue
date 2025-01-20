@@ -7,12 +7,9 @@
             v-model:value="keyword"
             placeholder="请输入搜索的关键词"
           ></n-input>
-          <n-button>
-            <template #icon>
-              <div class="i-bytesize-feed"></div>
-            </template>
-            从服务器更新关键词数据
-          </n-button>
+          <UpdateData :update-function="updateFunction"
+            >从服务器更新关键词数据</UpdateData
+          >
         </n-space>
       </div>
       <n-button type="primary" @click="onAdd">
@@ -54,35 +51,14 @@ import {
   NPopconfirm,
   NFormItem,
 } from 'naive-ui';
-import { serialize, deserialize } from 'seroval';
-import keywords from '../constant/Keywords.json';
+import * as _ from 'lodash-es';
+import { keywords, type Keyword, updateKeywords } from '../store';
+import UpdateData from './update-data.vue';
+
 import { v6 as uuid } from 'uuid';
+import { updateData } from '../api/data';
 
-interface Data {
-  type: 'string' | 'regexp';
-  value: string;
-  id: string;
-}
-
-const key = '_keyword';
-if (!window.localStorage.getItem(key)) {
-  window.localStorage.setItem(
-    key,
-    serialize(
-      keywords.map(
-        (item): Data => ({
-          type: 'string',
-          value: item,
-          id: uuid(),
-        }),
-      ),
-    ),
-  );
-}
-
-const data = ref(
-  (deserialize(window.localStorage.getItem(key) || '') || []) as Data[],
-);
+const data = ref(_.cloneDeep(keywords.value));
 
 const keyword = ref('');
 const presentationData = computed(() => {
@@ -93,6 +69,19 @@ const presentationData = computed(() => {
     return true;
   });
 });
+
+const updateFunction = async () => {
+  const result = await updateData<string[]>('keywords.json');
+  const newData = result.map((item): Keyword => {
+    return {
+      id: uuid(),
+      value: item,
+      type: 'string',
+    };
+  });
+  updateKeywords(newData);
+  data.value = _.cloneDeep(keywords.value);
+};
 
 const typeOptions = [
   {
@@ -108,9 +97,9 @@ const formRef = ref<FormInst | null>(null);
 
 const editLists = reactive<Record<string, boolean>>({});
 // 记忆值，取消之后需要恢复
-const cacheValue = new Map<string, Data>();
+const cacheValue = new Map<string, Keyword>();
 
-const columns: DataTableColumns<Data> = [
+const columns: DataTableColumns<Keyword> = [
   {
     title: '内容',
     key: 'value',
@@ -142,6 +131,10 @@ const columns: DataTableColumns<Data> = [
               {
                 async asyncValidator() {
                   const value = current.value.trim();
+                  const arr = data.value.filter(
+                    (f) => f.type === current.type && f.id !== row.id,
+                  );
+
                   if (!value) {
                     return Promise.reject(
                       current.type === 'string'
@@ -149,6 +142,7 @@ const columns: DataTableColumns<Data> = [
                         : '请输入正则表达式!',
                     );
                   }
+
                   if (current.type === 'regexp') {
                     try {
                       new RegExp(value);
@@ -156,6 +150,13 @@ const columns: DataTableColumns<Data> = [
                     } catch (e) {
                       return Promise.reject('请输入正确的正则表达式');
                     }
+                  }
+                  if (arr.some((f) => f.value === value)) {
+                    return Promise.reject(
+                      current.type === 'string'
+                        ? `关键词「${value}」已经存在！`
+                        : `正则表达式「${value}」已经存在！`,
+                    );
                   }
                 },
                 trigger: ['input', 'blur'],
@@ -275,8 +276,9 @@ const saveAll = async () => {
       }
       return item;
     })
-    .filter((f) => f?.value);
-  window.localStorage.setItem(key, serialize(localData));
+    .filter((f): f is Keyword => !!f?.value);
+
+  keywords.value = localData;
 };
 
 const { name } = defineProps<{ name: string }>();

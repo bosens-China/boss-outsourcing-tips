@@ -7,12 +7,9 @@
             v-model:value="keyword"
             placeholder="请输入搜索的关键词"
           ></n-input>
-          <n-button>
-            <template #icon>
-              <div class="i-bytesize-feed"></div>
-            </template>
-            从服务器更新白名单列表
-          </n-button>
+          <UpdateData :update-function="updateFunction"
+            >从服务器更新白名单列表</UpdateData
+          >
         </n-space>
       </div>
       <n-button type="primary" @click="onAdd">
@@ -47,35 +44,15 @@
 <script setup lang="tsx">
 import type { DataTableColumns, FormInst } from 'naive-ui';
 import { NButton, NSpace, NInput, NPopconfirm, NFormItem } from 'naive-ui';
-import { serialize, deserialize } from 'seroval';
-import whiteList from '../constant/white-list.json';
 import { v6 as uuid } from 'uuid';
-
-interface Data {
-  value: string;
-  id: string;
-}
-
-const key = '_white-list';
-if (!window.localStorage.getItem(key)) {
-  window.localStorage.setItem(
-    key,
-    serialize(
-      whiteList.map(
-        (item): Data => ({
-          value: item,
-          id: uuid(),
-        }),
-      ),
-    ),
-  );
-}
+import { whitelist, type Whitelist, updateWhitelist } from '../store';
+import * as _ from 'lodash-es';
+import UpdateData from './update-data.vue';
+import { updateData } from '../api/data';
 
 const formRef = ref<FormInst | null>(null);
 
-const data = ref(
-  (deserialize(window.localStorage.getItem(key) || '') || []) as Data[],
-);
+const data = ref(_.cloneDeep(whitelist.value));
 
 const keyword = ref('');
 const presentationData = computed(() => {
@@ -87,11 +64,23 @@ const presentationData = computed(() => {
   });
 });
 
+const updateFunction = async () => {
+  const result = await updateData<string[]>('white-list.json');
+  const newData = result.map((item): Whitelist => {
+    return {
+      id: uuid(),
+      value: item,
+    };
+  });
+  updateWhitelist(newData);
+  data.value = _.cloneDeep(whitelist.value);
+};
+
 const editLists = reactive<Record<string, boolean>>({});
 // 记忆值，取消之后需要恢复
-const cacheValue = new Map<string, Data>();
+const cacheValue = new Map<string, Whitelist>();
 
-const columns: DataTableColumns<Data> = [
+const columns: DataTableColumns<Whitelist> = [
   {
     title: '内容',
     key: 'value',
@@ -117,6 +106,15 @@ const columns: DataTableColumns<Data> = [
                 type: 'string',
                 transform(value) {
                   return value.trim();
+                },
+              },
+              {
+                trigger: ['input', 'blur'],
+                asyncValidator: async (_, value) => {
+                  const arr = data.value.filter((f) => f.id !== row.id);
+                  if (arr.some((f) => f.value === value)) {
+                    return Promise.reject(`黑名单「${value}」已存在！`);
+                  }
                 },
               },
             ]}
@@ -225,8 +223,9 @@ const saveAll = async () => {
       }
       return item;
     })
-    .filter((f) => f?.value);
-  window.localStorage.setItem(key, serialize(localData));
+    .filter((f): f is Whitelist => !!f?.value);
+
+  whitelist.value = localData;
 };
 
 const { name } = defineProps<{ name: string }>();

@@ -5,7 +5,7 @@ const tabs = [
   {
     tab: '过滤关键词',
     name: 'keyword',
-    components: defineAsyncComponent(() => import('./keyword.vue')),
+    components: defineAsyncComponent(() => import('./keywords.vue')),
   },
   {
     tab: '黑名单（公司）',
