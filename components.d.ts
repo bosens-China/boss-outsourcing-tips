@@ -15,6 +15,7 @@ declare module 'vue' {
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NDataTable: typeof import('naive-ui')['NDataTable']
     NFloatButton: typeof import('naive-ui')['NFloatButton']
+    NForm: typeof import('naive-ui')['NForm']
     NIcon: typeof import('naive-ui')['NIcon']
     NModal: typeof import('naive-ui')['NModal']
     NSpace: typeof import('naive-ui')['NSpace']

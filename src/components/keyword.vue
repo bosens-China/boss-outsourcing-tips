@@ -5,13 +5,13 @@
         <n-space>
           <n-input
             v-model:value="keyword"
-            placeholder="请输入查找的关键词"
+            placeholder="请输入搜索的关键词"
           ></n-input>
           <n-button>
             <template #icon>
               <div class="i-bytesize-feed"></div>
             </template>
-            从服务器更新数据
+            从服务器更新关键词数据
           </n-button>
         </n-space>
       </div>
@@ -22,21 +22,40 @@
         添加</n-button
       >
     </div>
-    <n-data-table
-      :columns="columns"
-      :data="presentationData"
-      :pagination="false"
-      :bordered="false"
-      :max-height="250"
-    />
+    <n-form
+      ref="formRef"
+      label-placement="left"
+      inline
+      :model="data"
+      :theme-overrides="{
+        peers: {
+          feedbackHeight: '0',
+        },
+      }"
+    >
+      <n-data-table
+        :columns="columns"
+        :data="presentationData"
+        :pagination="false"
+        :bordered="false"
+        :max-height="250"
+      />
+    </n-form>
   </n-space>
 </template>
 
 <script setup lang="tsx">
-import type { DataTableColumns } from 'naive-ui';
-import { NButton, NSpace, NInput, NSelect, NPopconfirm } from 'naive-ui';
+import type { DataTableColumns, FormInst } from 'naive-ui';
+import {
+  NButton,
+  NSpace,
+  NInput,
+  NSelect,
+  NPopconfirm,
+  NFormItem,
+} from 'naive-ui';
 import { serialize, deserialize } from 'seroval';
-import Keywords from '../constant/Keywords.json';
+import keywords from '../constant/Keywords.json';
 import { v6 as uuid } from 'uuid';
 
 interface Data {
@@ -50,7 +69,7 @@ if (!window.localStorage.getItem(key)) {
   window.localStorage.setItem(
     key,
     serialize(
-      Keywords.map(
+      keywords.map(
         (item): Data => ({
           type: 'string',
           value: item,
@@ -85,6 +104,7 @@ const typeOptions = [
     value: 'regexp',
   },
 ];
+const formRef = ref<FormInst | null>(null);
 
 const editLists = reactive<Record<string, boolean>>({});
 // 记忆值，取消之后需要恢复
@@ -106,19 +126,47 @@ const columns: DataTableColumns<Data> = [
         }
         return '请输入正则表达式';
       });
-
+      const index = data.value.findIndex((item) => item.id === row.id);
       return (
-        <div class={'flex items-center'}>
+        <div class={'flex'}>
           <NSelect
+            class="w-100px mr-12px"
             v-model:value={current.type}
             options={typeOptions}
-            class="w-100px mr-12px"
           ></NSelect>
-          <NInput
-            v-model:value={current.value}
-            placeholder={placeholder.value}
-            class={`"flex-1 inp-${row.id}`}
-          ></NInput>
+          <NFormItem
+            class={`flex-1 inp-${row.id}`}
+            label={''}
+            path={`${index}.value`}
+            rule={[
+              {
+                async asyncValidator() {
+                  const value = current.value.trim();
+                  if (!value) {
+                    return Promise.reject(
+                      current.type === 'string'
+                        ? '请输入关键词!'
+                        : '请输入正则表达式!',
+                    );
+                  }
+                  if (current.type === 'regexp') {
+                    try {
+                      new RegExp(value);
+                      return Promise.resolve();
+                    } catch (e) {
+                      return Promise.reject('请输入正确的正则表达式');
+                    }
+                  }
+                },
+                trigger: ['input', 'blur'],
+              },
+            ]}
+          >
+            <NInput
+              v-model:value={current.value}
+              placeholder={placeholder.value}
+            ></NInput>
+          </NFormItem>
         </div>
       );
     },
@@ -142,7 +190,12 @@ const columns: DataTableColumns<Data> = [
             <NButton
               type="primary"
               onClick={() => {
-                editLists[row.id] = false;
+                formRef.value
+                  ?.validate()
+                  .then(() => {
+                    editLists[row.id] = false;
+                  })
+                  .catch(() => {});
               }}
             >
               保存
@@ -211,4 +264,25 @@ const onAdd = () => {
     el.focus();
   });
 };
+
+const saveAll = async () => {
+  await formRef.value?.validate();
+  // 数据写入到本地，排除所有正在编辑的数据
+  const localData = data.value
+    .map((item) => {
+      if (editLists[item.id]) {
+        return cacheValue.get(item.id);
+      }
+      return item;
+    })
+    .filter((f) => f?.value);
+  window.localStorage.setItem(key, serialize(localData));
+};
+
+const { name } = defineProps<{ name: string }>();
+
+defineExpose({
+  saveAll,
+  name,
+});
 </script>
