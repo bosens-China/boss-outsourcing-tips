@@ -56,7 +56,7 @@ jobs:
           # Create a new commit with only the dist files
           git checkout --orphan temp-branch  # Create a new branch without history
           # Remove all files and directories except 'dist'
-          find . -mindepth 1 -maxdepth 1 ! -name 'dist' -exec rm -rf {} +
+          find . -mindepth 1 -maxdepth 1 ! -name 'dist' ! -name '.git' -exec rm -rf {} +
           # Move dist files to the root directory
           mv dist/* ./
           # Remove the now-empty dist directory
