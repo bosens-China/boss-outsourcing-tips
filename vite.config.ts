@@ -2,28 +2,25 @@ import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
-import { defineConfig, UserConfig } from 'vite';
+import { type UserConfig } from 'vite';
 import UnoCSS from 'unocss/vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import path from 'path';
-import { execSync } from 'child_process';
+import { $ } from 'zx';
 import * as _ from 'lodash-es';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-function getCurrentGitBranch() {
-  try {
-    const branch = execSync('git rev-parse --abbrev-ref HEAD', {
-      encoding: 'utf8',
-    }).trim();
-    return branch;
-  } catch {
-    return null;
-  }
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+
+export function getCurrentGitBranch() {
+  const result = $.sync`git rev-parse --abbrev-ref HEAD`;
+  return `${result}`.trim();
 }
 const TASK: UserConfig = process.env.TASK ? JSON.parse(process.env.TASK) : {};
 
 // vite.config.ts
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default () => {
   const config: UserConfig = {
     define: {
       __APP_BRANCH__: JSON.stringify(getCurrentGitBranch()),
@@ -58,7 +55,7 @@ export default defineConfig(() => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.join(__dirname, './src'),
       },
     },
     build: {
@@ -69,4 +66,4 @@ export default defineConfig(() => {
   };
 
   return _.merge(config, TASK);
-});
+};

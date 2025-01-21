@@ -68,7 +68,7 @@ const onSave = async () => {
     class="w-1000px"
     v-model:show="showModal"
     preset="card"
-    title="boss 外包提示设置界面"
+    title="BOSS直聘-外包标注 设置界面"
   >
     <n-tabs type="line" animated placement="left" v-model:value="activeTab">
       <n-tab-pane

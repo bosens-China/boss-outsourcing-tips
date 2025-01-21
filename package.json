@@ -1,14 +1,19 @@
 {
   "name": "boss-outsourcing-tips",
   "version": "1.1.0",
-  "description": "boss招聘对外包公司显式提醒",
+  "description": "BOSS直聘外包标注工具，对可能是外包的岗位进行显示提醒。",
   "type": "module",
   "private": true,
   "author": "yliu",
   "license": "MIT",
+  "greasemonkey": {
+    "match": "https://www.zhipin.com/job_detail/*",
+    "name": "BOSS直聘-外包标注"
+  },
+  "homepage": "https://github.com/bosens-China/boss-outsourcing-tips",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && tsx ./scripts/build.ts",
+    "build": "tsx ./scripts/build.ts",
     "preview": "vite preview",
     "test": "vitest"
   },
