@@ -54,9 +54,15 @@ jobs:
           TAG_NAME="v${{ env.version }}-dist"
           # Create a new commit with only the dist files
           git checkout --orphan temp-branch  # Create a new branch without history
-          git rm -rf .  # Remove all files
-          cp -r dist/* .  # Copy dist files to the root
-          git add .  # Add all files
+          # Remove all files except the dist directory
+          shopt -s extglob
+          rm -rf !(dist)
+          # Move dist files to the root directory
+          mv dist/* ./
+          # Remove the now-empty dist directory
+          rm -rf dist
+          # Add all files to the new commit
+          git add .
           git commit -m "Release $TAG_NAME"  # Commit the files
           git tag -f $TAG_NAME  # Create the tag
           git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git -f origin $TAG_NAME  # Push the tag
