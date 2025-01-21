@@ -1,4 +1,4 @@
-name: Create Release with Zip
+name: Create Tag and Sync dist Files
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - src/**
+      - scripts/**
 
 jobs:
   build:
@@ -15,62 +16,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          persist-credentials: false
-          # otherwise, there would be errors pushing refs to the destination repository.
-          fetch-depth: 0
+          fetch-depth: 0 # Ensure we have access to tags
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          # 选择要使用的 pnpm 版本
-          version: 7
-          # 使用 pnpm 安装依赖
+          version: 9
           run_install: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          # 选择要使用的 node 版本
-          node-version: 16.14.2
-          # 缓存 pnpm 依赖
+          node-version: 20.13.1
           cache: pnpm
 
-      # 运行构建脚本
       - name: Build tasks
-        run: npm run build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm run build
 
       - name: Get package.json info
         id: get_package_info
         run: |
           echo "name=$(jq -r .name package.json)" >> "$GITHUB_ENV"
           echo "version=$(jq -r .version package.json)" >> "$GITHUB_ENV"
-          echo "time=$(date +'%Y%m%d%H%M%S')" >> "$GITHUB_ENV"
 
-      - name: Zip dist/index.js
-        run: zip -r dist/index.zip dist/index.js
+      - name: Create version tag
+        run: |
+          git tag -f "v${{ env.version }}"
+          git push --force --tags
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.version }}_${{env.time}}
-          release_name: ${{ env.name }} v${{ env.version }}
-          body: New release
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/index.zip
-          asset_name: index.zip
-          asset_content_type: application/zip
+      - name: Create Git Tag for dist
+        run: |
+          TAG_NAME="v${{ env.version }}-dist"
+          # Create a new commit with only the dist files
+          git checkout --orphan temp-branch  # Create a new branch without history
+          git rm -rf .  # Remove all files
+          cp -r dist/* .  # Copy dist files to the root
+          git add .  # Add all files
+          git commit -m "Release $TAG_NAME"  # Commit the files
+          git tag -f $TAG_NAME  # Create the tag
+          git push -f origin $TAG_NAME  # Push the tag
+          git branch -D temp-branch  # Delete the temporary branch
