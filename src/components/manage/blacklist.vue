@@ -8,7 +8,7 @@
             placeholder="请输入搜索的关键词"
           ></n-input>
           <UpdateData :update-function="updateFunction"
-            >从服务器更新黑名单列表</UpdateData
+            >从仓库更新数据</UpdateData
           >
         </n-space>
       </div>

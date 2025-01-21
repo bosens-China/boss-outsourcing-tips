@@ -17,6 +17,9 @@ const props = defineProps<{
 const message = useMessage();
 const { run, loading } = useRequest(props.updateFunction, {
   manual: true,
+  onSuccess() {
+    message.success(`更新完成。`);
+  },
   onError(err) {
     message.error(err.message.toString());
   },

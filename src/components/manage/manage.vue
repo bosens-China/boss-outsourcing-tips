@@ -26,6 +26,7 @@ const allRef = ref<
   }[]
 >();
 const activeTab = ref('keyword');
+const message = useMessage();
 
 const onSave = async () => {
   for (const { saveAll, name } of allRef.value?.toSorted((x, y) => {
@@ -41,6 +42,7 @@ const onSave = async () => {
     }
   }
   showModal.value = false;
+  message.success(`保存全部设置成功。`);
 };
 </script>
 
@@ -59,14 +61,14 @@ const onSave = async () => {
         </n-icon>
       </n-float-button>
     </template>
-    boss 外包提示设置
+    打开设置面板
   </n-tooltip>
 
   <n-modal
     class="w-1000px"
     v-model:show="showModal"
     preset="card"
-    title="boss 外包提示设置"
+    title="boss 外包提示设置界面"
   >
     <n-tabs type="line" animated placement="left" v-model:value="activeTab">
       <n-tab-pane

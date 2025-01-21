@@ -1,8 +1,11 @@
 {
-  "name": "vite-project",
-  "private": true,
-  "version": "0.0.0",
+  "name": "boss-outsourcing-tips",
+  "version": "1.1.0",
+  "description": "boss招聘对外包公司显式提醒",
   "type": "module",
+  "private": true,
+  "author": "yliu",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
