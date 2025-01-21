@@ -46,24 +46,23 @@ jobs:
 
       - name: Create version tag
         run: |
-          git tag -f "v${{ env.version }}"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git --force --tags
+          TAG_NAME="v${{ env.version }}"
+          git tag -f $TAG_NAME
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git -f $TAG_NAME
 
       - name: Create Git Tag for dist
         run: |
           TAG_NAME="v${{ env.version }}-dist"
           # Create a new commit with only the dist files
           git checkout --orphan temp-branch  # Create a new branch without history
-          # Remove all files except the dist directory
-          shopt -s extglob
-          rm -rf !(dist)
+          # Remove all files and directories except 'dist'
+          find . -mindepth 1 -maxdepth 1 ! -name 'dist' -exec rm -rf {} +
           # Move dist files to the root directory
           mv dist/* ./
           # Remove the now-empty dist directory
           rm -rf dist
-          # Add all files to the new commit
           git add .
           git commit -m "Release $TAG_NAME"  # Commit the files
           git tag -f $TAG_NAME  # Create the tag
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git -f origin $TAG_NAME  # Push the tag
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git -f  $TAG_NAME  # Push the tag
           git branch -D temp-branch  # Delete the temporary branch
