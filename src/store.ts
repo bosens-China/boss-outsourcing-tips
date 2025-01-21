@@ -1,6 +1,6 @@
-import keywordsData from './constant/keywords.json';
-import blacklistData from './constant/blacklist.json';
-import whiteListData from './constant/white-list.json';
+import keywordsData from '@/constant/keywords.json';
+import blacklistData from '@/constant/blacklist.json';
+import whiteListData from '@/constant/white-list.json';
 import { serialize, deserialize } from 'seroval';
 import { v6 as uuid } from 'uuid';
 import { version } from '../package.json';
