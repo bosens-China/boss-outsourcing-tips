@@ -38,10 +38,15 @@ jobs:
           echo "name=$(jq -r .name package.json)" >> "$GITHUB_ENV"
           echo "version=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
+      - name: Create bot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
       - name: Create version tag
         run: |
           git tag -f "v${{ env.version }}"
-          git push --force --tags
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git --force --tags
 
       - name: Create Git Tag for dist
         run: |
@@ -53,5 +58,5 @@ jobs:
           git add .  # Add all files
           git commit -m "Release $TAG_NAME"  # Commit the files
           git tag -f $TAG_NAME  # Create the tag
-          git push -f origin $TAG_NAME  # Push the tag
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git -f origin $TAG_NAME  # Push the tag
           git branch -D temp-branch  # Delete the temporary branch
