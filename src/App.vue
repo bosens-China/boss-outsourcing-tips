@@ -28,6 +28,7 @@ watch(
 
 <template>
   <n-config-provider
+    inline-theme-disabled
     :theme-overrides="themeOverrides"
     :locale="zhCN"
     :date-locale="dateZhCN"
