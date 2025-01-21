@@ -46,9 +46,9 @@ import type { DataTableColumns, FormInst } from 'naive-ui';
 import { NButton, NSpace, NInput, NPopconfirm, NFormItem } from 'naive-ui';
 import { v6 as uuid } from 'uuid';
 import * as _ from 'lodash-es';
-import { blacklist, type Blacklist, updateBlacklist } from '../store';
+import { blacklist, type Blacklist, updateBlacklist } from '@/store';
 import UpdateData from './update-data.vue';
-import { updateData } from '../api/data';
+import { updateData } from '@/api/data';
 
 const formRef = ref<FormInst | null>(null);
 
@@ -191,7 +191,7 @@ const columns: DataTableColumns<Blacklist> = [
           >
             {{
               trigger: () => <NButton onClick={() => {}}>删除</NButton>,
-              default: () => '确定删除当前关键词吗？',
+              default: () => `确定删除「${row.value}」吗？`,
             }}
           </NPopconfirm>
         </NSpace>

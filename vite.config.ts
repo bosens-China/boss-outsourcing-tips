@@ -6,6 +6,7 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 import UnoCSS from 'unocss/vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,6 +16,7 @@ export default defineConfig({
       eslintrc: {
         enabled: true,
         filepath: './.eslintrc-auto-import.json',
+        globalsPropValue: 'readable',
       },
       imports: [
         'vue',
@@ -34,4 +36,9 @@ export default defineConfig({
     UnoCSS(),
     vueJsx(),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 });

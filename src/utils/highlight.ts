@@ -6,8 +6,13 @@ export interface Location {
 export type HighlightText = string | RegExp;
 
 export class Highlight {
-  /*
+  /**
    * 高亮区域
+   *
+   * @param {string} text
+   * @param {(HighlightText | HighlightText[])} highlightText
+   * @return {*}
+   * @memberof Highlight
    */
   highlightArea(text: string, highlightText: HighlightText | HighlightText[]) {
     const arr = Array.isArray(highlightText) ? highlightText : [highlightText];
@@ -18,11 +23,15 @@ export class Highlight {
       .flat(2);
 
     const optimizeLocations = this.mergeLocations(locations);
-    return this.render(text, optimizeLocations);
+    return {
+      result: this.render(text, optimizeLocations),
+      optimizeLocations: optimizeLocations,
+      locations,
+    };
   }
 
   private render(text: string, ranges: Location[]) {
-    let highlightedText = "";
+    let highlightedText = '';
     let currentIndex = 0;
 
     for (const range of ranges) {
@@ -36,7 +45,7 @@ export class Highlight {
       // 添加高亮部分
       highlightedText += `<span style="color: red;">${text.slice(
         start,
-        end
+        end,
       )}</span>`;
       currentIndex = end; // 更新当前索引
     }
@@ -49,13 +58,19 @@ export class Highlight {
     return highlightedText;
   }
 
-  /*
+  /**
+   *
    * 高亮文本位置查询
+   * @private
+   * @param {string} text
+   * @param {HighlightText} highlight
+   * @return {*}
+   * @memberof Highlight
    */
   private queryTheHighlightedPosition(text: string, highlight: HighlightText) {
-    const locationRecord: Location[] = [];
+    const locationRecord: (Location & { text: string })[] = [];
     const reg =
-      highlight instanceof RegExp ? highlight : new RegExp(highlight, "g");
+      highlight instanceof RegExp ? highlight : new RegExp(highlight, 'g');
 
     let result = reg.exec(text);
 
@@ -64,8 +79,9 @@ export class Highlight {
       locationRecord.push({
         start: result.index,
         end: result.index + highlightText.length,
+        text: highlightText,
       });
-      if (!reg.flags.includes("g")) {
+      if (!reg.flags.includes('g')) {
         break;
       }
       result = reg.exec(text);
@@ -73,16 +89,18 @@ export class Highlight {
     return locationRecord;
   }
 
-  /*
+  /**
    * 位置规则合并
    * 1. 处理规则如下，如果起始位置相同则则合并最大位置
    * 2. 如果元素的开始结束位置与其他成员的位置大小相邻或者在内则合并
-   *
+   * @param {Location[]} locations
+   * @return {*}
+   * @memberof Highlight
    */
   mergeLocations(locations: Location[]) {
     // 先按 start 排序，如果 start 相同按 end 排序
     const ranges = locations.toSorted(
-      (a, b) => a.start - b.start || a.end - b.end
+      (a, b) => a.start - b.start || a.end - b.end,
     );
     // 如果范围数组为空或只有一个范围，直接返回
     if (ranges.length <= 1) {
@@ -114,3 +132,5 @@ export class Highlight {
     return result;
   }
 }
+
+export const highlight = new Highlight();

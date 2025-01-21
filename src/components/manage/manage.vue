@@ -35,11 +35,12 @@ const onSave = async () => {
   }) || []) {
     try {
       await saveAll();
-    } catch (e) {
+    } catch {
       activeTab.value = name;
       return;
     }
   }
+  showModal.value = false;
 };
 </script>
 

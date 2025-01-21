@@ -8,7 +8,7 @@
             placeholder="请输入搜索的关键词"
           ></n-input>
           <UpdateData :update-function="updateFunction"
-            >从服务器更新关键词数据</UpdateData
+            >从服务器更新白名单列表</UpdateData
           >
         </n-space>
       </div>
@@ -43,22 +43,16 @@
 
 <script setup lang="tsx">
 import type { DataTableColumns, FormInst } from 'naive-ui';
-import {
-  NButton,
-  NSpace,
-  NInput,
-  NSelect,
-  NPopconfirm,
-  NFormItem,
-} from 'naive-ui';
-import * as _ from 'lodash-es';
-import { keywords, type Keyword, updateKeywords } from '../store';
-import UpdateData from './update-data.vue';
-
+import { NButton, NSpace, NInput, NPopconfirm, NFormItem } from 'naive-ui';
 import { v6 as uuid } from 'uuid';
-import { updateData } from '../api/data';
+import { whitelist, type Whitelist, updateWhitelist } from '@/store';
+import * as _ from 'lodash-es';
+import UpdateData from './update-data.vue';
+import { updateData } from '@/api/data';
 
-const data = ref(_.cloneDeep(keywords.value));
+const formRef = ref<FormInst | null>(null);
+
+const data = ref(_.cloneDeep(whitelist.value));
 
 const keyword = ref('');
 const presentationData = computed(() => {
@@ -71,35 +65,22 @@ const presentationData = computed(() => {
 });
 
 const updateFunction = async () => {
-  const result = await updateData<string[]>('keywords.json');
-  const newData = result.map((item): Keyword => {
+  const result = await updateData<string[]>('white-list.json');
+  const newData = result.map((item): Whitelist => {
     return {
       id: uuid(),
       value: item,
-      type: 'string',
     };
   });
-  updateKeywords(newData);
-  data.value = _.cloneDeep(keywords.value);
+  updateWhitelist(newData);
+  data.value = _.cloneDeep(whitelist.value);
 };
-
-const typeOptions = [
-  {
-    label: '文本',
-    value: 'string',
-  },
-  {
-    label: '正则',
-    value: 'regexp',
-  },
-];
-const formRef = ref<FormInst | null>(null);
 
 const editLists = reactive<Record<string, boolean>>({});
 // 记忆值，取消之后需要恢复
-const cacheValue = new Map<string, Keyword>();
+const cacheValue = new Map<string, Whitelist>();
 
-const columns: DataTableColumns<Keyword> = [
+const columns: DataTableColumns<Whitelist> = [
   {
     title: '内容',
     key: 'value',
@@ -109,76 +90,43 @@ const columns: DataTableColumns<Keyword> = [
         return row.value;
       }
       const current = data.value.find((item) => item.id === row.id)!;
-      const placeholder = computed(() => {
-        if (current.type === 'string') {
-          return '请输入关键词';
-        }
-        return '请输入正则表达式';
-      });
+      const placeholder = '请输入关键词';
       const index = data.value.findIndex((item) => item.id === row.id);
       return (
         <div class={'flex'}>
-          <NSelect
-            class="w-100px mr-12px"
-            v-model:value={current.type}
-            options={typeOptions}
-          ></NSelect>
           <NFormItem
             class={`flex-1 inp-${row.id}`}
             label={''}
             path={`${index}.value`}
             rule={[
               {
-                async asyncValidator() {
-                  const value = current.value.trim();
-                  const arr = data.value.filter(
-                    (f) => f.type === current.type && f.id !== row.id,
-                  );
-
-                  if (!value) {
-                    return Promise.reject(
-                      current.type === 'string'
-                        ? '请输入关键词!'
-                        : '请输入正则表达式!',
-                    );
-                  }
-
-                  if (current.type === 'regexp') {
-                    try {
-                      new RegExp(value);
-                      return Promise.resolve();
-                    } catch (e) {
-                      return Promise.reject('请输入正确的正则表达式');
-                    }
-                  }
+                trigger: ['input', 'blur'],
+                message: '请输入关键词!',
+                required: true,
+                type: 'string',
+                transform(value) {
+                  return value.trim();
+                },
+              },
+              {
+                trigger: ['input', 'blur'],
+                asyncValidator: async (_, value) => {
+                  const arr = data.value.filter((f) => f.id !== row.id);
                   if (arr.some((f) => f.value === value)) {
-                    return Promise.reject(
-                      current.type === 'string'
-                        ? `关键词「${value}」已经存在！`
-                        : `正则表达式「${value}」已经存在！`,
-                    );
+                    return Promise.reject(`黑名单「${value}」已存在！`);
                   }
                 },
-                trigger: ['input', 'blur'],
               },
             ]}
           >
             <NInput
               v-model:value={current.value}
-              placeholder={placeholder.value}
+              placeholder={placeholder}
             ></NInput>
           </NFormItem>
         </div>
       );
     },
-  },
-  {
-    title: '类型',
-    key: 'type',
-    render(row) {
-      return typeOptions.find((f) => f.value === row.type)?.label;
-    },
-    width: 80,
   },
   {
     width: 200,
@@ -243,7 +191,7 @@ const columns: DataTableColumns<Keyword> = [
           >
             {{
               trigger: () => <NButton onClick={() => {}}>删除</NButton>,
-              default: () => '确定删除当前关键词吗？',
+              default: () => `确定删除黑名单「${row.value}」吗？`,
             }}
           </NPopconfirm>
         </NSpace>
@@ -255,7 +203,6 @@ const columns: DataTableColumns<Keyword> = [
 const onAdd = () => {
   const id = uuid();
   data.value.push({
-    type: 'string',
     value: '',
     id,
   });
@@ -276,9 +223,9 @@ const saveAll = async () => {
       }
       return item;
     })
-    .filter((f): f is Keyword => !!f?.value);
+    .filter((f): f is Whitelist => !!f?.value);
 
-  keywords.value = localData;
+  whitelist.value = localData;
 };
 
 const { name } = defineProps<{ name: string }>();
