@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axios } from '@/utils/request';
 
 /**
  * 从仓库获取更新文件

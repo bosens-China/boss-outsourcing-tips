@@ -1,6 +1,6 @@
 {
   "name": "boss-outsourcing-tips",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "BOSS直聘外包标注工具，对可能是外包的岗位进行显示提醒。",
   "type": "module",
   "private": true,
