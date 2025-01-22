@@ -1,0 +1,114 @@
+{
+  "_data-CghoA-xH.js": {
+    "file": "data-CghoA-xH.js",
+    "name": "data",
+    "imports": [
+      "_vue-request-CjJKC2-2.js",
+      "_naive-ui-Ceukqjr2.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "_lodash-es-CqrSZx9w.js": {
+    "file": "lodash-es-CqrSZx9w.js",
+    "name": "lodash-es"
+  },
+  "_main-C3rIV8B5.js": {
+    "file": "main-C3rIV8B5.js",
+    "name": "main",
+    "imports": [
+      "_vue-DUZbidQX.js",
+      "_naive-ui-Ceukqjr2.js",
+      "_seroval-Br9mmj59.js",
+      "_uuid-DPrBhu07.js",
+      "_lodash-es-CqrSZx9w.js"
+    ],
+    "dynamicImports": [
+      "src/components/manage/keywords.vue",
+      "src/components/manage/blacklist.vue",
+      "src/components/manage/white-list.vue"
+    ]
+  },
+  "_naive-ui-Ceukqjr2.js": {
+    "file": "naive-ui-Ceukqjr2.js",
+    "name": "naive-ui",
+    "imports": [
+      "_lodash-es-CqrSZx9w.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "_seroval-Br9mmj59.js": {
+    "file": "seroval-Br9mmj59.js",
+    "name": "seroval"
+  },
+  "_uuid-DPrBhu07.js": {
+    "file": "uuid-DPrBhu07.js",
+    "name": "uuid"
+  },
+  "_vue-DUZbidQX.js": {
+    "file": "vue-DUZbidQX.js",
+    "name": "vue"
+  },
+  "_vue-request-CjJKC2-2.js": {
+    "file": "vue-request-CjJKC2-2.js",
+    "name": "vue-request",
+    "imports": [
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "src/components/manage/blacklist.vue": {
+    "file": "blacklist-x9Qj_g1v.js",
+    "name": "blacklist",
+    "src": "src/components/manage/blacklist.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_main-C3rIV8B5.js",
+      "_data-CghoA-xH.js",
+      "_lodash-es-CqrSZx9w.js",
+      "_naive-ui-Ceukqjr2.js",
+      "_uuid-DPrBhu07.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "src/components/manage/keywords.vue": {
+    "file": "keywords-CPuOz6dd.js",
+    "name": "keywords",
+    "src": "src/components/manage/keywords.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_main-C3rIV8B5.js",
+      "_data-CghoA-xH.js",
+      "_lodash-es-CqrSZx9w.js",
+      "_naive-ui-Ceukqjr2.js",
+      "_uuid-DPrBhu07.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "src/components/manage/white-list.vue": {
+    "file": "white-list-Dw4vF4nA.js",
+    "name": "white-list",
+    "src": "src/components/manage/white-list.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_main-C3rIV8B5.js",
+      "_data-CghoA-xH.js",
+      "_lodash-es-CqrSZx9w.js",
+      "_naive-ui-Ceukqjr2.js",
+      "_uuid-DPrBhu07.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "src/main.ts": {
+    "file": "index.js",
+    "name": "main",
+    "src": "src/main.ts",
+    "isEntry": true,
+    "imports": [
+      "_main-C3rIV8B5.js",
+      "_vue-DUZbidQX.js"
+    ]
+  },
+  "style.css": {
+    "file": "style.css",
+    "src": "style.css"
+  }
+}
