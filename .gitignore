@@ -9,7 +9,8 @@ lerna-debug.log*
 
 node_modules
 dist-ssr
-dist
+dist/*
+!dist/entrance.js
 *.local
 
 # Editor directories and files

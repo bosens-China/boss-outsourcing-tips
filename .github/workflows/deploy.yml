@@ -44,6 +44,13 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
+      - name: Push back dist
+        run: |
+          git add dist
+          git commit -m "Update dist" || exit 0
+          git pull --rebase --autostash
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git master
+
       - name: Create version tag
         run: |
           TAG_NAME="v${{ env.version }}"

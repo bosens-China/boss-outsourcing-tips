@@ -10,7 +10,7 @@
 
 - 方法一：[点击安装](https://greasyfork.org/zh-CN/scripts/478865-boss%E5%A4%96%E5%8C%85%E5%85%AC%E5%8F%B8%E6%8F%90%E7%A4%BA)
 
-- 方法二：自行添加油猴插件，点击 tag-xxxx-dist 查看构建后的代码解压后复制脚本。
+- 方法二：自行添加油猴插件，点击 tag-xxxx-dist 查看构建后的代码解压后复制脚本，或者直接复制 [entrance.js](./dist/entrance.js) 文件。
 
 ## 判定规则
 
