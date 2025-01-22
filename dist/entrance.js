@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BOSS直聘-外包标注
 // @namespace    https://github.com/bosens-China/boss-outsourcing-tips
-// @version      1.1.3
+// @version      1.1.4
 // @description  BOSS直聘外包标注工具，对可能是外包的岗位进行显示提醒。
 // @author       yliu
 // @match        https://www.zhipin.com/job_detail/*
@@ -63,7 +63,7 @@ var __async = (__this, __arguments, generator) => {
     src: `${axiosCnd}`,
     defer: true
   });
-  const version = "1.1.3";
+  const version = "1.1.4";
   const getAxios = () => window.axios;
   const isModule = isSupportModule();
   const prefixUrl = `https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@v${version}-dist/${isModule ? "es" : "iife"}`;
