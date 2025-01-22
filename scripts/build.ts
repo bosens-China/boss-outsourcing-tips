@@ -33,7 +33,7 @@ const tasks: Array<UserConfig> = [
           manualChunks: {
             vue: ['vue'],
             'naive-ui': ['naive-ui'],
-            axios: ['axios'],
+            // axios: ['axios'],
             'lodash-es': ['lodash-es'],
             seroval: ['seroval'],
             uuid: ['uuid'],
@@ -69,7 +69,7 @@ await build(
     build: {
       sourcemap: false,
       lib: {
-        entry: path.join(__dirname, '../src/entrance.ts'),
+        entry: path.join(__dirname, '../src/oil-monkey-script/entrance.ts'),
         formats: ['iife'],
         name: 'entrance',
         fileName() {

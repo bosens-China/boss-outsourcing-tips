@@ -62,6 +62,14 @@ export default () => {
       outDir: './dist/',
       target: ['es2015'],
       sourcemap: 'inline',
+      rollupOptions: {
+        external: ['axios'],
+        output: {
+          globals: {
+            axios: 'axios',
+          },
+        },
+      },
     },
   };
 
