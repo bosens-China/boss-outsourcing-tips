@@ -6,12 +6,11 @@ import {
   greasemonkey,
   homepage,
 } from '../package.json';
+import { type Rollup } from 'vite';
+import path from 'path';
+import fs from 'fs/promises';
 
-export default function addNotes() {
-  return {
-    name: 'add_notes',
-    renderChunk(code: string) {
-      const text = `
+const text = `
 // ==UserScript==
 // @name         ${greasemonkey.name}
 // @namespace    ${homepage}
@@ -24,7 +23,16 @@ export default function addNotes() {
 // ==/UserScript==
 `.trim();
 
-      return `${text}\n${code}`;
+export default function addNotes(): Rollup.Plugin {
+  return {
+    name: 'add_notes',
+    async writeBundle(outputOptions, bundle) {
+      for (const [fileName, chunk] of Object.entries(bundle)) {
+        if (chunk.type === 'chunk') {
+          const filePath = path.join(outputOptions.dir!, fileName);
+          await fs.writeFile(filePath, `${text}\n${chunk.code}`, 'utf-8');
+        }
+      }
     },
   };
 }

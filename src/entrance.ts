@@ -1,5 +1,6 @@
 import esManifest from '../dist/es/manifest.json';
 import iifeManifest from '../dist/iife/manifest.json';
+import { version } from '../package.json';
 
 let isModule = false;
 
@@ -9,9 +10,7 @@ try {
   isModule = false;
 }
 
-const branch = __APP_BRANCH__;
-
-const prefixUrl = `https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@${branch}/dist`;
+const prefixUrl = `https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@v${version}-dist`;
 
 function createScript({ src, type }: { src: string; type: string }) {
   const script = document.createElement('script');
@@ -32,16 +31,16 @@ function createStyle({ href }: { href: string }) {
 // https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@dev/dist/es/axios-Cf3dPNiV.js
 const main = function () {
   if (isModule) {
-    const { imports } = esManifest['src/main.ts'];
-    imports.forEach((file) => {
-      createScript({
-        type: 'module',
-        src: `${prefixUrl}/es/${file}`,
-      });
+    const { file: jsFile } = esManifest['src/main.ts'];
+
+    createScript({
+      type: 'module',
+      src: `${prefixUrl}/es/${jsFile}`,
     });
-    const { file } = esManifest['style.css'];
+
+    const { file: cssFile } = esManifest['style.css'];
     createStyle({
-      href: `${prefixUrl}/es/${file}`,
+      href: `${prefixUrl}/es/${cssFile}`,
     });
     return;
   }

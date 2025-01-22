@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import viteConfig from '../vite.config';
 import * as _ from 'lodash-es';
 import { $ } from 'zx';
+import addNotes from './addNotes';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -71,11 +72,14 @@ await build(
         entry: path.join(__dirname, '../src/entrance.ts'),
         formats: ['iife'],
         name: 'entrance',
-        fileName: 'entrance',
+        fileName() {
+          return `entrance.js`;
+        },
       },
       emptyOutDir: false,
       manifest: false,
+      minify: false,
     },
-    plugins: [],
+    plugins: [addNotes()],
   }),
 );
