@@ -1,4 +1,6 @@
-import { axios } from '@/utils/request';
+import { getAxios } from '@/utils/request';
+
+const axios = getAxios();
 
 /**
  * 从仓库获取更新文件

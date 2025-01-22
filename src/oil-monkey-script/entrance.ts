@@ -3,7 +3,7 @@ import type EsManifestType from '../../dist/es/manifest.json';
 import type IifeManifestType from '../../dist/iife/manifest.json';
 import { version } from '../../package.json';
 import { createScript, createStyle, isSupportModule } from './utils';
-import { axios } from '@/utils/request';
+import { getAxios } from '@/utils/request';
 
 const isModule = isSupportModule();
 
@@ -13,7 +13,7 @@ const prefixUrl = `https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-
 // https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@dev/dist/es/axios-Cf3dPNiV.js
 const main = async function () {
   await createAxios();
-
+  const axios = getAxios();
   const { data: manifest } = await axios.get<
     typeof EsManifestType | typeof IifeManifestType
   >(`${prefixUrl}/manifest.json`);
