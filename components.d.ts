@@ -22,6 +22,7 @@ declare module 'vue' {
     NSpace: typeof import('naive-ui')['NSpace']
     NTabPane: typeof import('naive-ui')['NTabPane']
     NTabs: typeof import('naive-ui')['NTabs']
+    NTag: typeof import('naive-ui')['NTag']
     NTooltip: typeof import('naive-ui')['NTooltip']
     ResultsDisplay: typeof import('./src/components/results-display/results-display.vue')['default']
     UpdateData: typeof import('./src/components/manage/update-data.vue')['default']

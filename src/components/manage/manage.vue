@@ -42,7 +42,7 @@ const onSave = async () => {
     }
   }
   showModal.value = false;
-  message.success(`保存全部设置成功。`);
+  message.success(`全部设置保存成功。`);
 };
 </script>
 

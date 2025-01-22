@@ -19,6 +19,7 @@ export interface Keyword {
   value: string;
   id: string;
   type: 'string' | 'regexp';
+  describe?: string;
 }
 
 export interface Store {
@@ -36,11 +37,13 @@ const defaultStore: Store = {
     value: item,
     id: uuid(),
   })),
-  keywords: keywordsData.map((item) => ({
-    value: item,
-    type: 'string',
-    id: uuid(),
-  })),
+  keywords: keywordsData.map((f) => {
+    return {
+      ...f,
+      type: f.type as Keyword['type'],
+      id: uuid(),
+    };
+  }),
 };
 
 export const blacklistKey = `blacklist_${version}`;

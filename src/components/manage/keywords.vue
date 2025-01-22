@@ -59,6 +59,7 @@ import { v6 as uuid } from 'uuid';
 import { updateData } from '@/api/data';
 
 const data = ref(_.cloneDeep(keywords.value));
+const message = useMessage();
 
 const keyword = ref('');
 const presentationData = computed(() => {
@@ -105,10 +106,13 @@ const columns: DataTableColumns<Keyword> = [
     key: 'value',
 
     render(row) {
+      const current = data.value.find((item) => item.id === row.id)!;
       if (!editLists[row.id]) {
+        if (current.type === 'regexp') {
+          return <n-tag> {row.value} </n-tag>;
+        }
         return row.value;
       }
-      const current = data.value.find((item) => item.id === row.id)!;
       const placeholder = computed(() => {
         if (current.type === 'string') {
           return '请输入关键词';
@@ -181,6 +185,10 @@ const columns: DataTableColumns<Keyword> = [
     width: 80,
   },
   {
+    title: '描述',
+    key: 'describe',
+  },
+  {
     width: 200,
     title: '操作',
     key: 'actions',
@@ -238,11 +246,12 @@ const columns: DataTableColumns<Keyword> = [
             onPositiveClick={() => {
               data.value = data.value.filter((item) => item.id !== row.id);
               delete editLists[row.id];
+              message.success('删除成功，保存设置后生效。');
             }}
             onNegativeClick={() => {}}
           >
             {{
-              trigger: () => <NButton onClick={() => {}}>删除</NButton>,
+              trigger: () => <NButton>删除</NButton>,
               default: () => `确定删除关键词「${row.value}」吗？`,
             }}
           </NPopconfirm>

@@ -51,6 +51,7 @@ import UpdateData from './update-data.vue';
 import { updateData } from '@/api/data';
 
 const formRef = ref<FormInst | null>(null);
+const message = useMessage();
 
 const data = ref(_.cloneDeep(whitelist.value));
 
@@ -186,11 +187,12 @@ const columns: DataTableColumns<Whitelist> = [
             onPositiveClick={() => {
               data.value = data.value.filter((item) => item.id !== row.id);
               delete editLists[row.id];
+              message.success('删除成功，保存设置后生效。');
             }}
             onNegativeClick={() => {}}
           >
             {{
-              trigger: () => <NButton onClick={() => {}}>删除</NButton>,
+              trigger: () => <NButton>删除</NButton>,
               default: () => `确定删除黑名单「${row.value}」吗？`,
             }}
           </NPopconfirm>

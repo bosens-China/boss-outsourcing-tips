@@ -8,6 +8,11 @@ export interface Mark {
   grade: 'keyword' | 'blacklist';
 }
 
+function fromRegexp(value: string): RegExp {
+  const fn = new Function(`return ${value}`);
+  return fn();
+}
+
 export const useHighlight = () => {
   const companyClass = `a[ka="job-detail-company_custompage"]`;
 
@@ -90,7 +95,13 @@ export const useHighlight = () => {
     [rules.jobTitle, rules.companyDesc, rules.jobDesc].forEach((rule) => {
       const { locations, result: html } = highlight.highlightArea(
         rule.text,
-        keywords.map((f) => f.value),
+        // 需要判断类型来取
+        keywords.map((f) => {
+          if (f.type === 'regexp') {
+            return fromRegexp(f.value);
+          }
+          return f.value;
+        }),
       );
       if (!locations.length || !rule.el) {
         return;
