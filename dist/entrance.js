@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BOSS直聘-外包标注
 // @namespace    https://github.com/bosens-China/boss-outsourcing-tips
-// @version      1.1.0
+// @version      1.1.1
 // @description  BOSS直聘外包标注工具，对可能是外包的岗位进行显示提醒。
 // @author       yliu
 // @match        https://www.zhipin.com/job_detail/*
@@ -63,19 +63,13 @@ var __async = (__this, __arguments, generator) => {
     src: `${axiosCnd}`,
     defer: true
   });
-  const version = "1.1.0";
+  const version = "1.1.1";
   const isModule = isSupportModule();
   const prefixUrl = `https://fastly.jsdelivr.net/gh/bosens-China/boss-outsourcing-tips@v${version}-dist/${isModule ? "es" : "iife"}`;
   const main = function() {
     return __async(this, null, function* () {
       yield createAxios();
       const axios = window.axios;
-      yield axios.get(
-        `${prefixUrl}/manifest.json`.replace(
-          `fastly.jsdelivr.net`,
-          `purge.jsdelivr.net`
-        )
-      );
       const { data: manifest } = yield axios.get(`${prefixUrl}/manifest.json`);
       const { file: jsFile } = manifest["src/main.ts"];
       const { file: cssFile } = manifest["style.css"];
