@@ -3,3 +3,5 @@
 *.md         text eol=lf
 *.yml        text eol=lf
 *.json       text eol=lf
+# 忽略html的统计，因为这里的话，html只是用于测试的
+*.html linguist-detectable=false
